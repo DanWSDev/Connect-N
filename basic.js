@@ -1,0 +1,98 @@
+const express = require('express'); //setup all required modules
+const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);		//create a new instance of a server called 'server'
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html'); // point to in html file where information will be sent and received
+});
+
+app.use(express.static('public'));			// Declare a folder where the application files are
+
+var gameon = false;
+var player1, player2, currentplayer;		// Declare player/socket variables 
+var colour = ["yellow", "red"];				// Declare colour array
+//var colour = ["blue", "green"];			// Declare alternative colour array
+
+io.on('connection', (socket) => {
+
+	if (!player1) { 										// This checks if Player1 actually exists at this point in time 
+	player1 = socket;										// If not then assign the most recent socket to Player1
+	console.log('Player 1 = ' + player1.id);		// Show player id (for tracking and debugging only)
+	player1.emit('welcome', 'Welcome Player 1 you are playing Yellow'); // Establish Player1 as yellow
+	player1.emit('setplayercolour', colour[0]);	//Set player1 as yellow player
+	}
+	else if (!player2) {									//If Player1 does exist and Player2 does'tthen assign most recent socket as Player2
+	player2 = socket;										// then assign most recent socket as Player2
+	console.log('Player 2 = ' + player2.id);		// Show player id (for tracking and debugging only)
+	player2.emit('welcome', 'Welcome Player 2 you are playing Red'); //Establish Player2 as red
+	player2.emit('setplayercolour', colour[1]);	//Set Player2 as red player
+	}
+		
+  console.log('a user connected'); 					//Show player connected (for tracking and debugging only)
+  
+  socket.on('disconnect', () => {					//If a player disconnects
+  	if (player1){
+  		if (socket.id == player1.id) {				//	If it's player1 that disconnects 
+  		player1 = null;									// then free the variable
+  		}
+  	}
+  	if (player2) {
+  		if (socket.id == player2.id) {				//	If it's player2 that disconnects 
+  		player2 = null;									// then free the variable
+  		}
+  	}
+    console.log('user disconnected');		//(for tracking and debugging only)
+  });
+});
+
+
+
+if (player1 && player2) {
+	   io.emit('turn', "There are two players connected so Let's play"); //Enough players to start game?
+	   gameon = true;																		//Set game as active
+   }
+	else {
+		io.emit('turn', "Waiting for opponent to connect");					//Waiting not enough to play
+		gameon = false;																	//Set game as inactive
+	}
+	
+
+// Below is the goes-in-turn logic
+
+
+var p1turn = true ;											// Boolean turn control variable
+io.on('connection', (socket) => {
+  socket.on('server move', (data,mycolor) => {		//Receive player move info
+  	if(player1) {												// Is player1 still active
+  	if (socket.id == player1.id && p1turn){			//is it player1 sending the move and is it their turn??
+  			io.emit('makemove', data,mycolor);			//If so, send move info to all players
+  			p1turn = false;									//It's not Player1's move now
+  			if(player2) {										// Is player2 still active
+  			player2.emit('turn', 'It is you turn');	//Tell Player2 it's their go
+  			} 	
+  			player1.emit('turn', 'Waiting for Player 2'); //Tell Player 1 they're waiting
+  			} 	
+  		}
+  		
+  		
+  			if(player2) {										// Is player2 still active
+  	if (socket.id == player2.id && !p1turn){			//is it player2 sending the move and is it their turn??
+  			io.emit('makemove', data,mycolor);			//If so, send move info to all players
+  			p1turn = true;										//It's Player1's move now
+  			if(player1) {										// Is player1 still active
+  			player1.emit('turn', 'It is you turn');	//Tell Player1 it's their go
+  			} 	
+  			player2.emit('turn', 'Waiting for Player 1');//Tell Player 1 they're waiting
+  			} 	 			
+  		} 	
+  });
+});
+
+
+
+server.listen(3000, () => {						//Server listening to traffic on port3 000
+  console.log('listening on *:3000');
+});

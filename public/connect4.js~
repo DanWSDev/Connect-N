@@ -1,0 +1,190 @@
+localcolour = "";
+
+var row = 7;			//declare global
+var col = 6;			//declare global
+var winRow = 0;		//declare global
+
+
+function setup(){ 
+
+    // Added 23/10/2021
+   isred = false;
+   row = parseInt(document.getElementById("row").value);			//Get red value from index.html element
+   col = parseInt(document.getElementById("column").value); 	//Get column value from index.html element
+	let grid = new Array(row * col +1);   								//Create array to implement grid
+   
+   drawGrid(row,col);														//Call function to draw board
+   winRow = parseInt(document.getElementById("connect").value);//Get winning run length value from index.html element
+   
+   winningRun = new Array(winRow);										//declare array to store the board positions for the winning run
+    
+    for(c = 1; c < col; c++)
+    {
+document.getElementById(c).innerHTML = '<div class=btnhover onclick="sendmove(place='+ c +',localcolour)"><svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">'
+        //document.getElementById(c).innerHTML = '<div class=btnhover onclick="move(place='+ c +')"><svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">'
+        + '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 0H0V50H50V0ZM25 47C37.1503 47 47 37.1503 47 25C47 12.8497 37.1503 3 25 3C12.8497 3 3 12.8497 3 25C3 37.1503 12.8497 47 25 47Z" fill="#0038FF"/>' +
+         '</svg></div>'; // same line but works the bottom buttons
+
+        document.getElementById("grid").style = 'grid-template-columns: repeat(' + col + ' , auto);';
+    }
+document.getElementById(c).innerHTML = '<div class=btnhover onclick="sendmove(place='+ c +',localcolour)"><svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">'
+     //document.getElementById(c).innerHTML = '<div class=btnhover onclick="move(place='+ c +')"><svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    + '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 0H0V50H50V0ZM25 47C37.1503 47 47 37.1503 47 25C47 12.8497 37.1503 3 25 3C12.8497 3 3 12.8497 3 25C3 37.1503 12.8497 47 25 47Z" fill="#0038FF"/>' +
+     '</svg></div>'; // same line but works the bottom buttons
+}
+
+
+function drawGrid(x,y){
+    	
+    total = x * y + 1;
+    for(j = 1; j < total; j++)
+    {
+        document.getElementById('grid').innerHTML += '<div id= ' + j + '><svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">'
+       + '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 0H0V50H50V0ZM25 47C37.1503 47 47 37.1503 47 25C47 12.8497 37.1503 3 25 3C12.8497 3 3 12.8497 3 25C3 37.1503 12.8497 47 25 47Z" fill="#0038FF"/>' +
+        '</svg></div>';
+    }
+}
+
+
+function colour(){
+ 
+    if (isred == true){
+        alert("red");
+    }
+    if (isred == false)
+    {
+        alert("yellow");
+    }
+}
+
+function goesfirst(){
+    first = none;
+
+    if (first == true){
+        alert("first");
+    }
+    if (first == false){
+        alert("second");
+    }
+}
+
+function dropcounter(pl,dropcolour){								//Function to drop counter from place vaue and colour
+
+	nrow = parseInt(document.getElementById("row").value);	//Get row value from index.html element
+   colm = parseInt(document.getElementById("column").value);//Get column value from index.html element
+	
+        for(i = 1; i < nrow; i++)
+        {
+            if ((document.getElementById(pl + colm).style.backgroundColor != "red") && (document.getElementById(pl + colm).style.backgroundColor != "yellow"))//check if cell is not full
+            {
+             pl = pl + colm;
+            }
+        }
+  
+    document.getElementById(pl).style.backgroundColor = dropcolour;	//Actually colour cell
+    grid[pl] = dropcolour;															//Place colour in grid
+    isWin(dropcolour,pl);															//Call functions to test for win
+    return;
+}
+
+//===========================================================================================================================================================================================================
+
+
+							// keep scalable
+let upDiagonal = - (row -1);
+let downDiagonal =  row +1;														//vector offsets us to effectively search 
+let Horizontal = 1;																	//the board at different angles for a winning run
+let Vertical = row;
+
+
+
+
+
+function isWin(colour,gridPos)
+{	
+   checkRun(Horizontal,colour,gridPos);
+   checkRun(downDiagonal,colour,gridPos);			//Check for a winning run
+   checkRun(upDiagonal,colour,gridPos);			//from all angles radiating from last drop
+   checkRun(Vertical,colour,gridPos);
+}
+    
+function checkRun(vector,colour,counterPos)
+{
+								
+let result = false;
+let run = 0;
+let moveOn = true;
+winningRun[run] = counterPos;
+
+while (colour == grid[counterPos] && moveOn == true) {  				//Test for run in "Forward" direction from last move position  
+  run++;
+  next = counterPos+=vector;  												//add the appropriate value for next colour test
+  if (counterPos % row != 1) 													//Test if current cell is and end column
+     { 			
+     winningRun[run] = counterPos;											//Update the winning run to highlight winning cells
+        counterPos = next;    
+     }
+     else 
+     {
+     	moveOn = false;
+     }
+  }
+  
+  if (colour != grid[counterPos]) {
+  counterPos -= vector;
+}
+  
+  //if (run < winRow && vector != "Vertical") {
+  if (run < winRow) {
+  	run = 0;	
+  	moveOn = true;									
+  			
+  														//Reset run length to zero if run length is not a winner
+  									//Move back to last place of test colour
+  
+  while (colour == grid[counterPos] && moveOn == true) {  			//Test for run in "reverse" direction from last test colour tile in this plane
+	run++;  
+	next = counterPos -= vector;
+ 
+  if (counterPos % row != 0)
+     { 	
+     winningRun[run] = counterPos;				  
+        counterPos=next;
+        
+       
+     }
+     else {
+     	moveOn = false;
+     }
+  }
+  }
+  
+  
+if (run >= winRow) {
+  		result = true;
+  		//alert("***WINNER***");						//current indication of win (to be developed))
+  		showWin();
+  		}
+  	return result;
+}
+
+function showWin()
+{
+	//alert("SHOW WINNER");
+document.getElementById("winner").innerHTML = localcolour + ' is the ** WINNER **';
+
+
+	for (let i = 0; i < winRow; i++){
+	document.getElementById(winningRun[i]).style.backgroundColor = "PaleGreen";
+}
+	
+}
+
+//========================================================================================================================================================================
+function sendmove(val,drcol) {
+socket.emit('server move', val, drcol);
+}
+
+
+
+

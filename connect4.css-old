@@ -1,0 +1,187 @@
+.menu{
+    padding: 0 15%;
+}
+#colour button{
+    border: none;
+    padding: 1em;
+    margin: 1em;
+    border-radius: 10%;
+}
+#colour button:nth-child(1){
+ background-color: red;
+}
+
+#colour button:nth-child(2){
+    background-color: yellow;
+}
+
+
+
+
+
+
+
+nav button{
+    padding: 1em;
+    margin: 1.5em;
+}
+#grid{
+    width: 0%;
+    height: 0%;
+    padding: 0.1%;
+    display: grid;
+    border-radius: 5%;
+}
+
+#center{
+    display: grid;
+    justify-content: center;
+}
+
+.holes{
+    background-color: white;
+    border-radius: 50%;
+    text-align: center;
+}
+
+/*Added 18/10/2021*/
+.server{
+    width: 40%;
+    background-color: rgb(97, 11, 11);
+    padding: 2em;
+    border-radius: 1em;
+    margin: 1em;
+    justify-content: center;
+}
+#list{
+    height:  10em;
+    width:  45em;
+    margin: 1em;
+    overflow: auto;
+    background-color: white;
+}
+.server button{
+    background-color: rgb(9, 194, 255);
+    border: none;
+    color: white;
+    padding: 1em;
+    border-radius: 1em;
+}
+/*Added 18/10/2021*/
+
+#body{
+    background-color:rgb(29, 29, 29);
+    color: rgb(94, 97, 245);
+}
+
+/* Mobile */
+
+@media only screen and (max-width:600px){
+    h1{
+        visibility: hidden;
+    }
+    .menu{
+        visibility: hidden;
+    }
+    nav button{
+        visibility: hidden;
+    }
+    #grid{
+        visibility: hidden;
+    }
+    .server{
+        visibility: hidden;
+    }
+
+    html{
+        height: 100%;
+        overflow: hidden;
+    }
+}
+
+.mnav{
+    padding: 1em;
+    border-radius: 2em;
+    margin: 2em 17em;
+    background-color: rgb(255, 255, 255);
+    text-align: center;
+    color: black;
+    letter-spacing: 0.3em;
+}
+
+#find, #create, #email, #reportbug, #row, #column, #connect, #firstmove, #done, #back, #chat, #pick{
+    display: none;
+}
+svg{
+    display: block;
+    margin: auto;
+}
+footer{
+    position: fixed;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    bottom: 0;
+    width: 100%;
+    color: white;
+}
+.btnhover:hover{
+    background-color: rgb(0, 0, 0);
+}
+
+@keyframes drop{
+    0%
+    {
+        top: 0%;
+    }
+    50%
+    {
+        top: 100%;
+    }
+}
+
+#decision{
+    display: flex;
+    padding: 1em;
+    justify-content: center;
+}
+
+#decision button{
+    margin: 1em;
+    border: none;
+    padding: 1em;
+    border-radius: 5em;
+}
+h1{
+    text-align: center;
+    color: white;
+}
+#red{
+    color: white;
+    background-color: red;
+}
+#yellow{
+    background-color: yellow;
+}
+#green{
+    color: white;
+    background-color: green;
+}
+#blue{
+    color: white;
+    background-color: blue;
+}
+#pink{
+    background-color: pink;
+}
+#purple{
+    color: white;
+    background-color: purple;
+}
+#gray{
+    color: white;
+    background-color: gray;
+}
+#white{
+    background-color: white;
+}
